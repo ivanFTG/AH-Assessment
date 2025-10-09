@@ -46,7 +46,7 @@ final class Api: ApiProtocol {
         }
     }
 
-    @concurrent private func decode<T: Decodable>(data: Data) async throws(AppError) -> T {
+    private func decode<T: Decodable>(data: Data) async throws(AppError) -> T {
         do {
             return try JSONDecoder().decode(T.self, from: data)
         } catch {

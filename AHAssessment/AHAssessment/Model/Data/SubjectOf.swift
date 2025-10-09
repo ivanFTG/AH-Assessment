@@ -4,7 +4,7 @@ struct SubjectOf: Decodable {
     let part: [Part]?
     let language: [ContentLanguage]?
 
-    func isEnglish() -> Bool {
+    var isEnglish: Bool {
         language?.contains { $0.identifier == .english } == true
     }
 }

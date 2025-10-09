@@ -13,7 +13,7 @@ protocol CacheProtocol {
 }
 
 final class ApiCache: CacheProtocol {
-    let shared = ApiCache()
+    static let shared = ApiCache()
 
     private let api: ApiProtocol
     private let store: StoreProtocol

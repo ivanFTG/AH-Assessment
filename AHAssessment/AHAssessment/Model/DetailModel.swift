@@ -29,28 +29,35 @@ struct DetailModel: Decodable {
         identifier = try container.decode(String.self, forKey: .identifier)
 
         let production = try container.decodeIfPresent(Production.self, forKey: .producedBy)
-        date = production?.timeStamp?.identifiedBy?.first { $0.language?.identifier == .english }?.content
-        author = production?.referredToBy?.first { $0.language?.identifier == .english }?.content
+        date = production?.timeStamp?.identifiedBy?
+            .first { $0.isEnglish }?.content ?? "Unknown"
+        author = production?.referredToBy?
+            .first { $0.isEnglish }?.content ?? "Unknown"
 
         let subjectOf = try container.decodeIfPresent([SubjectOf].self, forKey: .subjectOf)
-        let englishSubject = subjectOf?.first { $0.isEnglish() }
-        briefTitle = englishSubject?.part?.first { $0.part != nil }?.part?.first { $0.identifier != nil }?.content
-        briefSubtitle = englishSubject?.part?.first { $0.part != nil }?.part?.first { $0.identifier == nil }?.content
-        briefDescription = englishSubject?.part?.first { $0.content != nil }?.content
+        let englishSubject = subjectOf?.first { $0.isEnglish }
+        briefTitle = englishSubject?.part?
+            .first { $0.part != nil }?.part?
+            .first { $0.identifier != nil }?.content ?? "No English Title Found"
+        briefSubtitle = englishSubject?.part?
+            .first { $0.part != nil }?.part?
+            .first { $0.identifier == nil }?.content ?? "No English Subtitle Found"
+        briefDescription = englishSubject?.part?
+            .first { $0.content != nil }?.content ?? "No English Description Found"
 
         let dimension = try container.decodeIfPresent([Dimension].self, forKey: .dimension)
-        height = dimension?.first { $0.classifiedAs?.identifier == Measurement.height.rawValue }?.value
-        width = dimension?.first { $0.classifiedAs?.identifier == Measurement.width.rawValue }?.value
+        height = dimension?.compactMap { $0.height }.first
+        width = dimension?.compactMap { $0.width }.first
 
         let currentLocation = try container.decodeIfPresent(CurrentLocation.self, forKey: .currentLocation)
         locationCode = currentLocation?.identifiedBy?.first { $0.type == .identifier }?.content
         let englishLocationDescriptions = currentLocation?.identifiedBy?.filter {
-            $0.type == .name && $0.language?.identifier == .english
+            $0.type == .name && $0.isEnglish
         }.first
         locationDescription = englishLocationDescriptions?.part?.compactMap { $0.content }.joined(separator: ", ")
 
-        let referredToBuy = try container.decodeIfPresent([ReferredToBy].self, forKey: .referredToBy)
-        let englishDescriptions = referredToBuy?.filter { $0.language?.identifier == .english }
+        let referredToBy = try container.decodeIfPresent([ReferredToBy].self, forKey: .referredToBy)
+        let englishDescriptions = referredToBy?.filter { $0.isEnglish }
         description = englishDescriptions?.compactMap { $0.content }.joined(separator: ", ")
 
         let shows = try container.decodeIfPresent([Shows].self, forKey: .shows)

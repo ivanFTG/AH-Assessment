@@ -2,12 +2,13 @@ import Foundation
 import UIKit
 
 final class ListCellView: UIView {
-    static let imageSize: CGFloat = 80
+    static let imageSize: CGFloat = 120
 
     private let imageView = View.imageView()
     private let titleLabel = View.titleLabel()
     private let authorLabel = View.authorLabel()
     private let dateLabel = View.dateLabel()
+    private let labelsStack = View.labelsStack()
 
     init() {
         super.init(frame: .zero)
@@ -22,13 +23,21 @@ final class ListCellView: UIView {
         dateLabel.text = detail.date
     }
 
-    private func setupView() {
-        layer.cornerRadius = 16
+    func reset() {
+        imageView.image = UIImage(resource: .cellPlaceHolder)
+        titleLabel.text = nil
+        authorLabel.text = nil
+        dateLabel.text = nil
+    }
 
+    private func setupView() {
         addSubview(imageView)
-        addSubview(titleLabel)
-        addSubview(authorLabel)
-        addSubview(dateLabel)
+        addSubview(labelsStack)
+
+        let spacer = UIView()
+        spacer.translatesAutoresizingMaskIntoConstraints = false
+        spacer.setContentHuggingPriority(.defaultLow, for: .vertical)
+        [titleLabel, authorLabel, spacer, dateLabel].forEach(labelsStack.addArrangedSubview)
 
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: topAnchor),
@@ -36,18 +45,10 @@ final class ListCellView: UIView {
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             imageView.widthAnchor.constraint(equalToConstant: ListCellView.imageSize),
 
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-            titleLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-
-            authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            authorLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            authorLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
-
-            dateLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 8),
-            dateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
-            dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor)
+            labelsStack.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            labelsStack.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
+            labelsStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            labelsStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4)
         ])
     }
 
@@ -65,7 +66,7 @@ final class ListCellView: UIView {
 
         static func titleLabel() -> UILabel {
             let label = UILabel()
-            label.font = UIFont.preferredFont(forTextStyle: .subheadline)
+            label.font = UIFont.preferredFont(forTextStyle: .headline)
             label.numberOfLines = 0
             label.textColor = .appPrimary
             label.translatesAutoresizingMaskIntoConstraints = false
@@ -87,6 +88,14 @@ final class ListCellView: UIView {
             label.textAlignment = .right
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
+        }
+
+        static func labelsStack() -> UIStackView {
+            let stackView = UIStackView()
+            stackView.axis = .vertical
+            stackView.spacing = 8
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            return stackView
         }
     }
 }

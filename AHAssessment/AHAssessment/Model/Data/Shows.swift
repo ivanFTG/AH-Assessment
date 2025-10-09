@@ -1,6 +1,6 @@
 import Foundation
 
-struct Shows: Decodable {
+struct Shows: Decodable, Sendable {
     let identifier: String
 
     enum CodingKeys: String, CodingKey {

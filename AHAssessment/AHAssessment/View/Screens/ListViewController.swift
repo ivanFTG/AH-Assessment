@@ -28,8 +28,8 @@ final class ListViewController: UIViewController {
         super.viewDidLoad()
 
         setupViews()
-        Task {
-            await startObservation()
+        Task { [weak self] in
+            await self?.startObservation()
         }
     }
 
@@ -52,7 +52,9 @@ final class ListViewController: UIViewController {
     }
 
     private func setupViews() {
-        view.backgroundColor = .appBackground
+        title = "Rijks Museum Collection"
+        view.backgroundColor = .appCellBackground
+        collectionView.backgroundColor = .appBackground
 
         view.addSubview(collectionView)
         collectionView.delegate = self
@@ -74,8 +76,9 @@ final class ListViewController: UIViewController {
         static func collectionView() -> UICollectionView {
             let layout = UICollectionViewFlowLayout()
             layout.scrollDirection = .vertical
-            layout.minimumLineSpacing = 0
+            layout.minimumLineSpacing = 16
             layout.minimumInteritemSpacing = 0
+            layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
             let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
             collectionView.translatesAutoresizingMaskIntoConstraints = false
             return collectionView
@@ -104,7 +107,7 @@ extension ListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        CGSize(width: collectionView.bounds.width, height: 56)
+        CGSize(width: collectionView.bounds.width - 32, height: ListCellView.imageSize)
     }
 }
 
@@ -129,7 +132,7 @@ extension ListViewController: UICollectionViewDataSource {
         }
 
         guard indexPath.row < viewState.artList.count else { return UICollectionViewCell() }
-        cell.configure(with: "\(indexPath.row + 1) - \(viewState.artList[indexPath.row])")
+        cell.configure(with: viewState.artList[indexPath.row])
         return cell
     }
 }

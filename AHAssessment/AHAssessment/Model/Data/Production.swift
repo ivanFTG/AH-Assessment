@@ -14,11 +14,19 @@ struct TimeStamp: Decodable {
 
     struct IdentifiedBy: Decodable {
         let content: String?
-        let language: ContentLanguage?
+        let language: [ContentLanguage]?
+
+        var isEnglish: Bool {
+            language?.contains { $0.identifier == .english } == true
+        }
     }
 }
 
 struct ProductionReferredToBy: Decodable {
     let content: String?
-    let language: ContentLanguage?
+    let language: [ContentLanguage]?
+
+    var isEnglish: Bool {
+        language?.contains { $0.identifier == .english } == true
+    }
 }
