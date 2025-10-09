@@ -49,7 +49,7 @@ I will use basic MVVM for the example as I only need two screens and will show b
 
 ## Navigation
 I will need to create some pattern to handle navigation. A Coordinator pattern will be nice here. For simplicity I will only have one coordinator for the whole flow (as the app only has one navigation controller, there is no need to over complicate).
-* Coordinator will be the delegate of each Vie
+* Coordinator will be the delegate of each ViewModel.
 
 ## List Screen
 This screen will contain:
