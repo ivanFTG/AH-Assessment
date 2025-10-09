@@ -13,22 +13,42 @@ final class ListViewModel {
     var artList: [String] = []
     var nextPageUrl: String?
 
+    private var blockMorePageLoading = false
+
     init(api: ApiProtocol = Api()) {
         self.api = api
 
-        Task {
-            await loadFirstPage()
+        Task { [weak self] in
+            await self?.loadFirstPage()
         }
     }
 
     private func loadFirstPage() async {
         defer {
             firstLoad = false
+            blockMorePageLoading = false
         }
+
+        firstLoad = true
+        blockMorePageLoading = true
         do {
-            firstLoad = true
-            let newListPage = try await api.searchRequest(description: nil)
+            let newListPage = try await api.searchRequest(pageUrl: nextPageUrl, description: nil)
             artList = newListPage.itemUrls
+            nextPageUrl = newListPage.nextPageUrl
+        } catch {
+            print(error)
+        }
+    }
+
+    func loadNextPage() async {
+        guard !blockMorePageLoading else { return }
+        defer {
+            blockMorePageLoading = false
+        }
+        blockMorePageLoading = true
+        do {
+            let newListPage = try await api.searchRequest(pageUrl: nextPageUrl, description: nil)
+            artList.append(contentsOf: newListPage.itemUrls)
             nextPageUrl = newListPage.nextPageUrl
         } catch {
             print(error)

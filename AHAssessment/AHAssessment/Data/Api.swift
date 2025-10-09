@@ -1,12 +1,12 @@
 import Foundation
 
 protocol ApiProtocol {
-    func searchRequest(description: String?) async throws(AppError) -> ListModel
+    func searchRequest(pageUrl: String?, description: String?) async throws(AppError) -> ListModel
 }
 
 final class Api: ApiProtocol {
-    func searchRequest(description: String?) async throws(AppError) -> ListModel {
-        var baseURLString = "https://data.rijksmuseum.nl/search/collection"
+    func searchRequest(pageUrl: String?, description: String?) async throws(AppError) -> ListModel {
+        var baseURLString = pageUrl ?? "https://data.rijksmuseum.nl/search/collection"
         if let description {
             baseURLString = "\(baseURLString)?description=\(description)"
         }
