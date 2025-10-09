@@ -1,6 +1,8 @@
 # AH-Assessment
 Albert Heijn assessment for iOS Software Engineer post. The idea is to have a small app with two screens, one to list arts in possession of the Rijks Museum and a second to show the details of a selected art.
 
+The project has been done using XCode 26 and Swift 6.2 with latest version of concurrency.
+
 ## Planning
 Please go to the [Planning document](Planning/Planning.md) to read the basic planning before starting implementation.
 
@@ -33,9 +35,6 @@ For maintaining a basic code quality I have used SwiftLint in the project.
 * SwiftlintPlugin added as Xcode package dependency
 
 
-## Implementation Notes
-* Using XCode 26 and Swift 6.2 with latest version of concurrency.
-
 ## Techdebt
 Please go to the [TECHDEBT document](TECHDEBT.md) to read missing implementations and fixes, 
 
@@ -44,5 +43,5 @@ Understanding the Rijks Museum has been a little tricky, and the implementation 
 
 For the balance of UIKit - SwiftUI in the code base, I usually go for using the oldest API/Framework patterns. So in this case as UIKit is the older UI framework, I have used Controllers and the SWiftUI View has been injected as an UIHostingController.
 
-Creating the parsing of the Detail has been tricky, the json is quite complex and making something clear and easy to understand has been tricky. I think the final result is so so
+Creating the parsing of the Detail has been tricky, the json is quite complex and making something clear and easy to understand has been tricky. I think the final result is so so. It is difficult to understand some parts of the decoding function.
 
