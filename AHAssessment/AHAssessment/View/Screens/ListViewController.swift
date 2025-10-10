@@ -5,8 +5,9 @@ final class ListViewController: UIViewController {
     struct State {
         let firstLoad: Bool
         let artList: [String]
+        let errorMessage: String?
 
-        static let initial = State(firstLoad: false, artList: [])
+        static let initial = State(firstLoad: false, artList: [], errorMessage: nil)
     }
 
     private let viewModel: ListViewModel
@@ -37,9 +38,13 @@ final class ListViewController: UIViewController {
     private func startObservation() async {
         let streamOfStates = Observations { [weak self] in
             guard let self = self else {
-                return State(firstLoad: false, artList: [])
+                return State.initial
             }
-            return State(firstLoad: self.viewModel.firstLoad, artList: self.viewModel.artList)
+            return State(
+                firstLoad: self.viewModel.firstLoad,
+                artList: self.viewModel.artList,
+                errorMessage: self.viewModel.errorMessage
+            )
         }
 
         for await state in streamOfStates {
@@ -48,8 +53,16 @@ final class ListViewController: UIViewController {
     }
 
     private func updateUI(with state: State) {
-        viewState = state
-        collectionView.reloadData()
+        if let errorMessage = state.errorMessage {
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(alert, animated: true)
+            }
+        } else {
+            viewState = state
+            collectionView.reloadData()
+        }
     }
 
     private func setupViews() {
@@ -106,7 +119,7 @@ extension ListViewController: UICollectionViewDelegate {
         let offset = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let visibleHeight = scrollView.bounds.height
-        let loadThreshold: CGFloat = 200
+        let loadThreshold: CGFloat = 300
 
         if offset + visibleHeight + loadThreshold >= contentHeight {
             Task { [weak self] in

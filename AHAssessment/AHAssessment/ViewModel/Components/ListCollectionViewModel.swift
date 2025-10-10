@@ -3,6 +3,7 @@ import Foundation
 @Observable
 final class ListCollectionViewModel {
     var detail: DetailModel?
+    var errorMessage: String?
 
     private let cache: CacheProtocol
 
@@ -14,11 +15,12 @@ final class ListCollectionViewModel {
         do {
             detail = try await cache.loadDetail(for: idUrl)
         } catch {
-            print(error)
+            errorMessage = error.errorDescription
         }
     }
 
     func resetDetail() {
         detail = nil
+        errorMessage = nil
     }
 }

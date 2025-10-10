@@ -12,8 +12,7 @@ final class ListViewModel {
     var firstLoad = false
     var artList: [String] = []
     var nextPageUrl: String?
-    var loadScreenErrorMessage: String?
-    var nextScreenErrorMessage: String?
+    var errorMessage: String?
 
     private var blockMorePageLoading = false
     private var searchTask: Task<Void, Never>?
@@ -38,7 +37,7 @@ final class ListViewModel {
             artList.append(contentsOf: newListPage.itemUrls)
             self.nextPageUrl = newListPage.nextPageUrl
         } catch {
-            loadScreenErrorMessage = error.errorDescription
+            errorMessage = error.errorDescription
         }
     }
 
@@ -75,7 +74,7 @@ final class ListViewModel {
             artList = newListPage.itemUrls
             nextPageUrl = newListPage.nextPageUrl
         } catch {
-            loadScreenErrorMessage = error.errorDescription
+            errorMessage = error.errorDescription
         }
     }
 }

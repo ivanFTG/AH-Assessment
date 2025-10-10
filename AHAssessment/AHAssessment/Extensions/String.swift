@@ -5,4 +5,3 @@ extension String {
         String(repeating: " ", count: numberOfCharacters)
     }
 }
-

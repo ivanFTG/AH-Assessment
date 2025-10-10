@@ -25,6 +25,15 @@ struct DetailView: View {
         .animation(.easeInOut, value: viewModel.image)
         .animation(.easeInOut, value: viewModel.isLoading)
         .background(Color.appCellBackground)
+        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("OK") {
+                viewModel.errorMessage = nil
+            }
+        } message: {
+            if let message = viewModel.errorMessage {
+                Text(message)
+            }
+        }
     }
 
     private func imageView() -> some View {

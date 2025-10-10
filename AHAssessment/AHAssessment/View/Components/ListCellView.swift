@@ -4,6 +4,8 @@ import UIKit
 final class ListCellView: UIView {
     struct State {
         let image: UIImage?
+
+        static let initial = State(image: nil)
     }
     private let imageView = View.imageView()
     private let titleLabel = View.titleLabel()
@@ -26,7 +28,7 @@ final class ListCellView: UIView {
     private func startObservation() async {
         let streamOfStates = Observations { [weak self] in
             guard let self = self else {
-                return State(image: nil)
+                return State.initial
             }
             return State(image: viewModel.image)
         }

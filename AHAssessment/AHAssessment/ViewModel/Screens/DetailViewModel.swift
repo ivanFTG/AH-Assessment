@@ -6,6 +6,7 @@ final class DetailViewModel {
     var detailItem = DetailModel.placeHolderDetail
     var image: UIImage?
     var isLoading = true
+    var errorMessage: String?
 
     private let imageWidth: CGFloat = 1320 // iPhone Max has the biggest screen width in pixels
 
@@ -24,7 +25,7 @@ final class DetailViewModel {
         do {
             detailItem = try await cache.loadDetail(for: idUrl)
         } catch {
-            print(error)
+            errorMessage = error.errorDescription
         }
     }
 
