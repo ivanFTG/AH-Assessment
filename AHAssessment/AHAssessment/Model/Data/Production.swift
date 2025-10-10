@@ -1,11 +1,16 @@
 import Foundation
 
 struct Production: Decodable {
-    let timeStamp: TimeStamp?
+    let timespan: Timespan?
     let referredToBy: [ProductionReferredToBy]?
+
+    enum CodingKeys: String, CodingKey {
+        case timespan
+        case referredToBy = "referred_to_by"
+    }
 }
 
-struct TimeStamp: Decodable {
+struct Timespan: Decodable {
     let identifiedBy: [IdentifiedBy]?
 
     enum CodingKeys: String, CodingKey {

@@ -55,7 +55,7 @@ I will need to create some pattern to handle navigation. A Coordinator pattern w
 This screen will contain:
 * The collection view with the list of cells for the loaded json response.
 	* The cell needs to be shown with a background of rijks museum and a loader as each element is loaded from another url.
-* A search bar to search and filter out elements in the list (If I have time).
+* A search bar to search and filter out elements in the list.
 
 ## Detail Screen
 This screen will contain:

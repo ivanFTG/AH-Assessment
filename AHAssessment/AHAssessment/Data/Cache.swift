@@ -9,7 +9,8 @@ protocol StoreProtocol: Actor {
 }
 
 protocol CacheProtocol {
-    func loadDetail(for id: String) async throws(AppError) -> DetailModel
+    func loadDetail(for idUrl: String) async throws(AppError) -> DetailModel
+    func loadImage(for imageUrl: String, size: CGFloat) async throws(AppError) -> UIImage
 }
 
 final class ApiCache: CacheProtocol {
@@ -23,11 +24,30 @@ final class ApiCache: CacheProtocol {
         self.store = store
     }
 
-    func loadDetail(for id: String) async throws(AppError) -> DetailModel {
-        guard let detail = try? await store.getDetailItem(for: id) else {
-            return try await api.fetchDetail(for: id)
+    func loadDetail(for idUrl: String) async throws(AppError) -> DetailModel {
+        guard let detail = try? await store.getDetailItem(for: idUrl) else {
+            let detail = try await api.fetchDetail(for: idUrl)
+            await store.setDetailItem(detail, for: idUrl)
+            return detail
         }
+        print("Load Detail from cache: \(idUrl)")
         return detail
+    }
+
+    func loadImage(for imageUrl: String, size: CGFloat) async throws(AppError) -> UIImage {
+        var imageIIIFUrl = try await api.fetchIIIFImageUrl(for: imageUrl)
+        imageIIIFUrl = imageIIIFUrl.replacingOccurrences(of: "max", with: "\(size)")
+
+        guard let image = try? await store.getImage(for: imageIIIFUrl) else {
+            let imageData = try await api.downloadImage(for: imageIIIFUrl)
+            guard let image = UIImage(data: imageData) else {
+                throw AppError.wrongResponse
+            }
+            await store.setImage(image, for: imageIIIFUrl)
+            return image
+        }
+        print("Load Image from cache: \(imageUrl)")
+        return image
     }
 }
 

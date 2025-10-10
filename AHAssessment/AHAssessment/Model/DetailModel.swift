@@ -2,11 +2,11 @@ import Foundation
 
 struct DetailModel: Decodable {
     let identifier: String
-    let date: String?
-    let author: String?
-    let briefTitle: String?
-    let briefSubtitle: String?
-    let briefDescription: String?
+    let date: String
+    let author: String
+    let briefTitle: String
+    let briefSubtitle: String
+    let briefDescription: String
     let height: String?
     let width: String?
     let locationCode: String?
@@ -29,7 +29,7 @@ struct DetailModel: Decodable {
         identifier = try container.decode(String.self, forKey: .identifier)
 
         let production = try container.decodeIfPresent(Production.self, forKey: .producedBy)
-        date = production?.timeStamp?.identifiedBy?
+        date = production?.timespan?.identifiedBy?
             .first { $0.isEnglish }?.content ?? "Unknown"
         author = production?.referredToBy?
             .first { $0.isEnglish }?.content ?? "Unknown"
@@ -38,12 +38,12 @@ struct DetailModel: Decodable {
         let englishSubject = subjectOf?.first { $0.isEnglish }
         briefTitle = englishSubject?.part?
             .first { $0.part != nil }?.part?
-            .first { $0.identifier != nil }?.content ?? "No English Title Found"
+            .first { $0.identifier != nil }?.content ?? "No Title Found"
         briefSubtitle = englishSubject?.part?
             .first { $0.part != nil }?.part?
-            .first { $0.identifier == nil }?.content ?? "No English Subtitle Found"
+            .first { $0.identifier == nil }?.content ?? "No Subtitle Found"
         briefDescription = englishSubject?.part?
-            .first { $0.content != nil }?.content ?? "No English Description Found"
+            .first { $0.content != nil }?.content ?? "No Description Found"
 
         let dimension = try container.decodeIfPresent([Dimension].self, forKey: .dimension)
         height = dimension?.compactMap { $0.height }.first

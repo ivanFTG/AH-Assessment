@@ -1,7 +1,7 @@
 import Foundation
 
 struct ListModel: Decodable {
-    let nextPageUrl: String
+    let nextPageUrl: String?
     let itemUrls: [String]
 
     enum CodingKeys: String, CodingKey {
@@ -12,8 +12,8 @@ struct ListModel: Decodable {
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let nextPage = try container.decode(NextPage.self, forKey: .next)
-        nextPageUrl = nextPage.id
+        let nextPage = try container.decodeIfPresent(NextPage.self, forKey: .next)
+        nextPageUrl = nextPage?.id
 
         let orderedItems = try container.decode([OrderedItem].self, forKey: .orderedItems)
         itemUrls = orderedItems.map(\.id)

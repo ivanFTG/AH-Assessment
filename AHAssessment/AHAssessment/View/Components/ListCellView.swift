@@ -2,25 +2,48 @@ import Foundation
 import UIKit
 
 final class ListCellView: UIView {
-    static let imageSize: CGFloat = 120
-
+    struct State {
+        let image: UIImage?
+    }
     private let imageView = View.imageView()
     private let titleLabel = View.titleLabel()
     private let authorLabel = View.authorLabel()
     private let dateLabel = View.dateLabel()
     private let labelsStack = View.labelsStack()
 
+    private let viewModel = ListCellViewModel()
+    private let imageSize: CGFloat = 120
+
     init() {
         super.init(frame: .zero)
 
         setupView()
+        Task { [weak self] in
+            await self?.startObservation()
+        }
+    }
+
+    private func startObservation() async {
+        let streamOfStates = Observations { [weak self] in
+            guard let self = self else {
+                return State(image: nil)
+            }
+            return State(image: viewModel.image)
+        }
+
+        for await state in streamOfStates {
+            imageView.image = state.image
+        }
     }
 
     func configure(with detail: DetailModel) {
-        imageView.image = UIImage(resource: .cellPlaceHolder)
         titleLabel.text = detail.briefTitle
-        authorLabel.text = detail.author
-        dateLabel.text = detail.date
+        authorLabel.text = "Author: \(detail.author)"
+        dateLabel.text = "Date: \(detail.date)"
+        Task { [weak self] in
+            guard let self else { return }
+            await viewModel.configureWith(imageDataUrl: detail.imageDataUrls?.first, size: imageSize)
+        }
     }
 
     func reset() {
@@ -43,7 +66,7 @@ final class ListCellView: UIView {
             imageView.topAnchor.constraint(equalTo: topAnchor),
             imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: ListCellView.imageSize),
+            imageView.widthAnchor.constraint(equalToConstant: imageSize),
 
             labelsStack.topAnchor.constraint(equalTo: topAnchor, constant: 4),
             labelsStack.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
@@ -59,7 +82,9 @@ final class ListCellView: UIView {
     private enum View {
         static func imageView() -> UIImageView {
             let imageView = UIImageView()
+            imageView.image = UIImage(resource: .cellPlaceHolder)
             imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
             imageView.translatesAutoresizingMaskIntoConstraints = false
             return imageView
         }
@@ -67,7 +92,7 @@ final class ListCellView: UIView {
         static func titleLabel() -> UILabel {
             let label = UILabel()
             label.font = UIFont.preferredFont(forTextStyle: .headline)
-            label.numberOfLines = 0
+            label.numberOfLines = 2
             label.textColor = .appPrimary
             label.translatesAutoresizingMaskIntoConstraints = false
             return label
@@ -76,6 +101,7 @@ final class ListCellView: UIView {
         static func authorLabel() -> UILabel {
             let label = UILabel()
             label.font = UIFont.preferredFont(forTextStyle: .body)
+            label.numberOfLines = 2
             label.textColor = .appTextPrimary
             label.translatesAutoresizingMaskIntoConstraints = false
             return label

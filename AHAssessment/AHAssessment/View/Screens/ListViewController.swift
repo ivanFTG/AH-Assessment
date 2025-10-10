@@ -13,6 +13,7 @@ final class ListViewController: UIViewController {
     private var viewState: State = .initial
 
     private let collectionView = View.collectionView()
+    private let searchController = View.searchController()
 
     init(viewModel: ListViewModel) {
         self.viewModel = viewModel
@@ -54,9 +55,14 @@ final class ListViewController: UIViewController {
     private func setupViews() {
         title = "Rijks Museum Collection"
         view.backgroundColor = .appCellBackground
-        collectionView.backgroundColor = .appBackground
+
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
 
         view.addSubview(collectionView)
+        collectionView.backgroundColor = .appBackground
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(
@@ -66,7 +72,7 @@ final class ListViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
@@ -82,6 +88,15 @@ final class ListViewController: UIViewController {
             let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
             collectionView.translatesAutoresizingMaskIntoConstraints = false
             return collectionView
+        }
+
+        static func searchController() -> UISearchController {
+            let search = UISearchController(searchResultsController: nil)
+            search.obscuresBackgroundDuringPresentation = false
+            search.hidesNavigationBarDuringPresentation = false
+            search.searchBar.autocapitalizationType = .none
+            search.searchBar.autocorrectionType = .no
+            return search
         }
     }
 }
@@ -107,7 +122,7 @@ extension ListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        CGSize(width: collectionView.bounds.width - 32, height: ListCellView.imageSize)
+        CGSize(width: collectionView.bounds.width - 32, height: 160)
     }
 }
 
@@ -134,5 +149,12 @@ extension ListViewController: UICollectionViewDataSource {
         guard indexPath.row < viewState.artList.count else { return UICollectionViewCell() }
         cell.configure(with: viewState.artList[indexPath.row])
         return cell
+    }
+}
+
+extension ListViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let text = searchController.searchBar.text ?? ""
+        viewModel.searchTextChanged(text)
     }
 }

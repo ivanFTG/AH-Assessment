@@ -43,5 +43,5 @@ Understanding the Rijks Museum has been a little tricky, and the implementation 
 
 For the balance of UIKit - SwiftUI in the code base, I usually go for using the oldest API/Framework patterns. So in this case as UIKit is the older UI framework, I have used Controllers and the SWiftUI View has been injected as an UIHostingController.
 
-Creating the parsing of the Detail has been tricky, the json is quite complex and making something clear and easy to understand has been tricky. I think the final result is so so. It is difficult to understand some parts of the decoding function.
+Creating the parsing of the Detail has been difficult, the json is quite complex and making something clear and easy to understand has been tricky. I think the final result is so so. It is difficult to understand some parts of the decoding function, and I think I should have used another solution for parsing the URL ids type fields. To be honest it is my first time working with an API like this one.
 
