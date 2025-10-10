@@ -46,7 +46,6 @@ final class DetailViewModel {
     }
 }
 
-
 private extension DetailModel {
     static let placeHolderDetail = DetailModel(
         identifier: "",
