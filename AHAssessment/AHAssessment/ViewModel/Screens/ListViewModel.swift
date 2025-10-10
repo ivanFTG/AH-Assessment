@@ -11,6 +11,7 @@ final class ListViewModel {
 
     var firstLoad = false
     var artList: [String] = []
+
     var nextPageUrl: String?
     var errorMessage: String?
 

@@ -19,6 +19,11 @@ struct ListModel: Decodable {
         itemUrls = orderedItems.map(\.id)
     }
 
+    init(nextPageUrl: String?, itemUrls: [String]) {
+        self.nextPageUrl = nextPageUrl
+        self.itemUrls = itemUrls
+    }
+
     private struct NextPage: Decodable {
         let id: String
     }
