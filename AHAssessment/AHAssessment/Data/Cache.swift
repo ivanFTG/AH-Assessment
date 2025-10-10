@@ -30,7 +30,7 @@ final class ApiCache: CacheProtocol {
             await store.setDetailItem(detail, for: idUrl)
             return detail
         }
-        print("Load Detail from cache: \(idUrl)")
+        print("Load Detail from cache: \(idUrl)") // show cache working
         return detail
     }
 
@@ -46,7 +46,7 @@ final class ApiCache: CacheProtocol {
             await store.setImage(image, for: imageIIIFUrl)
             return image
         }
-        print("Load Image from cache: \(imageUrl)")
+        print("Load Image from cache: \(imageIIIFUrl)") // show cache working
         return image
     }
 }

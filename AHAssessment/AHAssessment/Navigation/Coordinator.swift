@@ -23,8 +23,9 @@ final class Coordinator: CoordinatorProtocol {
 }
 
 extension Coordinator: ListNavigationDelegate {
-    func goToDetail(withId: String) {
-        let view = DetailView()
+    func goToDetail(with idUrl: String) {
+        let viewModel = DetailViewModel(idUrl: idUrl)
+        let view = DetailView(viewModel: viewModel)
         let viewController = UIHostingController<DetailView>(rootView: view)
         navigationController.pushViewController(viewController, animated: true)
     }

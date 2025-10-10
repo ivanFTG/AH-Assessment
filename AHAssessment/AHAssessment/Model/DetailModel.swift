@@ -14,6 +14,16 @@ struct DetailModel: Decodable {
     let description: String?
     let imageDataUrls: [String]?
 
+    var dimensions: String? {
+        guard let height, let width else { return nil }
+        return "\(height) x \(width)"
+    }
+
+    var location: String? {
+        guard let locationCode, let locationDescription else { return nil }
+        return "\(locationCode): \(locationDescription)"
+    }
+
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
         case producedBy = "produced_by"
@@ -58,9 +68,37 @@ struct DetailModel: Decodable {
 
         let referredToBy = try container.decodeIfPresent([ReferredToBy].self, forKey: .referredToBy)
         let englishDescriptions = referredToBy?.filter { $0.isEnglish }
-        description = englishDescriptions?.compactMap { $0.content }.joined(separator: ", ")
+        description = englishDescriptions?.compactMap { $0.content }.joined(separator: "\n")
 
         let shows = try container.decodeIfPresent([Shows].self, forKey: .shows)
         imageDataUrls = shows?.map { $0.identifier }
+    }
+
+    init(
+        identifier: String,
+        date: String,
+        author: String,
+        briefTitle: String,
+        briefSubtitle: String,
+        briefDescription: String,
+        height: String?,
+        width: String?,
+        locationCode: String?,
+        locationDescription: String?,
+        description: String?,
+        imageDataUrls: [String]?
+    ) {
+        self.identifier = identifier
+        self.date = date
+        self.author = author
+        self.briefTitle = briefTitle
+        self.briefSubtitle = briefSubtitle
+        self.briefDescription = briefDescription
+        self.height = height
+        self.width = width
+        self.locationCode = locationCode
+        self.locationDescription = locationDescription
+        self.description = description
+        self.imageDataUrls = imageDataUrls
     }
 }

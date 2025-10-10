@@ -114,6 +114,10 @@ extension ListViewController: UICollectionViewDelegate {
             }
         }
     }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewModel.showDetailView(for: indexPath.row)
+    }
 }
 
 extension ListViewController: UICollectionViewDelegateFlowLayout {

@@ -1,13 +1,13 @@
 import Foundation
 
 protocol ListNavigationDelegate: AnyObject {
-    func goToDetail(withId: String)
+    func goToDetail(with idUrl: String)
 }
 
 @Observable
 final class ListViewModel {
     private let api: ApiProtocol
-    weak var navigationDelegate: ListNavigationDelegate?
+    var navigationDelegate: ListNavigationDelegate?
 
     var firstLoad = false
     var artList: [String] = []
@@ -27,6 +27,7 @@ final class ListViewModel {
     }
 
     func loadNextPage() async {
+        guard let nextPageUrl else { return }
         guard !blockMorePageLoading else { return }
         defer {
             blockMorePageLoading = false
@@ -35,24 +36,7 @@ final class ListViewModel {
         do {
             let newListPage = try await api.searchRequest(pageUrl: nextPageUrl, description: nil)
             artList.append(contentsOf: newListPage.itemUrls)
-            nextPageUrl = newListPage.nextPageUrl
-        } catch {
-            loadScreenErrorMessage = error.errorDescription
-        }
-    }
-
-    private func loadFirstPage(with searchDescription: String?) async {
-        defer {
-            firstLoad = false
-            blockMorePageLoading = false
-        }
-
-        firstLoad = true
-        blockMorePageLoading = true
-        do {
-            let newListPage = try await api.searchRequest(pageUrl: nextPageUrl, description: searchDescription)
-            artList = newListPage.itemUrls
-            nextPageUrl = newListPage.nextPageUrl
+            self.nextPageUrl = newListPage.nextPageUrl
         } catch {
             loadScreenErrorMessage = error.errorDescription
         }
@@ -70,6 +54,28 @@ final class ListViewModel {
                 artList = []
                 await loadFirstPage(with: text)
             }
+        }
+    }
+
+    func showDetailView(for index: Int) {
+        guard index < artList.count else { return }
+        navigationDelegate?.goToDetail(with: artList[index])
+    }
+
+    private func loadFirstPage(with searchDescription: String?) async {
+        defer {
+            firstLoad = false
+            blockMorePageLoading = false
+        }
+
+        firstLoad = true
+        blockMorePageLoading = true
+        do {
+            let newListPage = try await api.searchRequest(pageUrl: nextPageUrl, description: searchDescription)
+            artList = newListPage.itemUrls
+            nextPageUrl = newListPage.nextPageUrl
+        } catch {
+            loadScreenErrorMessage = error.errorDescription
         }
     }
 }
